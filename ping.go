@@ -159,8 +159,8 @@ type Packet struct {
   // IPAddr is the address of the host being pinged.
   IPAddr *net.IPAddr
 
-  // rAddr is the address of the host responding.
-  rAddr *net.Addr
+  // RAddr is the address of the host responding.
+  RAddr *net.Addr
 
   // NBytes is the number of bytes in the message.
   Nbytes int
@@ -363,7 +363,6 @@ func (p *Pinger) Statistics() *Statistics {
     Rtts:        p.rtts,
     Addr:        p.addr,
     IPAddr:      p.ipaddr,
-    RAddr:       p.rAddr,
     MaxRtt:      max,
     MinRtt:      min,
   }
@@ -435,7 +434,7 @@ func (p *Pinger) processPacket(recv *packet) error {
   outPkt := &Packet{
     Nbytes: recv.nbytes,
     IPAddr: p.ipaddr,
-    rAddr: p.rAddr,
+    RAddr: p.rAddr,
   }
 
   switch pkt := m.Body.(type) {
