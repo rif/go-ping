@@ -185,7 +185,7 @@ type Statistics struct {
   IPAddr *net.IPAddr
 
   // rAddr is the address of the host responding.
-  rAddr *net.Addr
+  RAddr *net.Addr
 
   // Addr is the string address of the host being pinged.
   Addr string
@@ -363,7 +363,7 @@ func (p *Pinger) Statistics() *Statistics {
     Rtts:        p.rtts,
     Addr:        p.addr,
     IPAddr:      p.ipaddr,
-    rAddr:       p.rAddr,
+    RAddr:       p.rAddr,
     MaxRtt:      max,
     MinRtt:      min,
   }
