@@ -135,6 +135,7 @@ type Pinger struct {
   done chan bool
 
   ipaddr *net.IPAddr
+  rAddr  *net.Addr
   addr   string
 
   ipv4     bool
@@ -147,7 +148,7 @@ type Pinger struct {
 type packet struct {
   bytes     []byte
   nbytes    int
-  rAddr     *net.IPAddr
+  rAddr     *net.Addr
 }
 
 // Packet represents a received and processed ICMP echo packet.
@@ -157,6 +158,9 @@ type Packet struct {
 
   // IPAddr is the address of the host being pinged.
   IPAddr *net.IPAddr
+
+  // rAddr is the address of the host responding.
+  rAddr *net.Addr
 
   // NBytes is the number of bytes in the message.
   Nbytes int
@@ -179,6 +183,9 @@ type Statistics struct {
 
   // IPAddr is the address of the host being pinged.
   IPAddr *net.IPAddr
+
+  // rAddr is the address of the host responding.
+  rAddr *net.Addr
 
   // Addr is the string address of the host being pinged.
   Addr string
@@ -356,6 +363,7 @@ func (p *Pinger) Statistics() *Statistics {
     Rtts:        p.rtts,
     Addr:        p.addr,
     IPAddr:      p.ipaddr,
+    rAddr:       p.rAddr,
     MaxRtt:      max,
     MinRtt:      min,
   }
@@ -393,7 +401,7 @@ func (p *Pinger) recvICMP(conn *icmp.PacketConn, recv chan<- *packet, wg *sync.W
         }
       }
 
-      recv <- &packet{bytes: bytes, nbytes: n, rAddr: rAddr}
+      recv <- &packet{bytes: bytes, nbytes: n, rAddr: &rAddr}
     }
   }
 }
@@ -426,7 +434,8 @@ func (p *Pinger) processPacket(recv *packet) error {
 
   outPkt := &Packet{
     Nbytes: recv.nbytes,
-    IPAddr: recv.rAddr,
+    IPAddr: p.ipaddr,
+    rAddr: p.rAddr,
   }
 
   switch pkt := m.Body.(type) {
@@ -436,7 +445,8 @@ func (p *Pinger) processPacket(recv *packet) error {
     p.PacketsRecv += 1
   default:
     // Very bad, not sure how this can happen
-    return fmt.Errorf("Error, invalid ICMP echo reply. Body type: %T, %s", pkt, pkt)
+    return fmt.Errorf("Error, invalid ICMP echo reply. Body type: %T, %s",
+      pkt, pkt)
   }
 
   p.rtts = append(p.rtts, outPkt.Rtt)
