@@ -135,7 +135,7 @@ type Pinger struct {
   done chan bool
 
   ipaddr *net.IPAddr
-  rAddr  *net.Addr
+  rAddr  net.Addr
   addr   string
 
   ipv4     bool
@@ -148,7 +148,7 @@ type Pinger struct {
 type packet struct {
   bytes     []byte
   nbytes    int
-  rAddr     *net.Addr
+  rAddr     net.Addr
 }
 
 // Packet represents a received and processed ICMP echo packet.
@@ -160,7 +160,7 @@ type Packet struct {
   IPAddr *net.IPAddr
 
   // RAddr is the address of the host responding.
-  RAddr *net.Addr
+  RAddr net.Addr
 
   // NBytes is the number of bytes in the message.
   Nbytes int
@@ -185,7 +185,7 @@ type Statistics struct {
   IPAddr *net.IPAddr
 
   // rAddr is the address of the host responding.
-  RAddr *net.Addr
+  RAddr net.Addr
 
   // Addr is the string address of the host being pinged.
   Addr string
@@ -400,7 +400,7 @@ func (p *Pinger) recvICMP(conn *icmp.PacketConn, recv chan<- *packet, wg *sync.W
         }
       }
 
-      recv <- &packet{bytes: bytes, nbytes: n, rAddr: &rAddr}
+      recv <- &packet{bytes: bytes, nbytes: n, rAddr: rAddr}
     }
   }
 }
