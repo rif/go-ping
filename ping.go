@@ -434,7 +434,7 @@ func (p *Pinger) processPacket(recv *packet) error {
   outPkt := &Packet{
     Nbytes: recv.nbytes,
     IPAddr: p.ipaddr,
-    RAddr: p.rAddr,
+    RAddr: recv.rAddr,
   }
 
   switch pkt := m.Body.(type) {
