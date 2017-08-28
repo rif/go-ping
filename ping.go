@@ -332,6 +332,10 @@ func (p *Pinger) run() {
 	}
 }
 
+func (p *Pinger) Stop() {
+	close(p.done)
+}
+
 func (p *Pinger) finish() {
 	handler := p.OnFinish
 	if handler != nil {

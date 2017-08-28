@@ -73,6 +73,7 @@ func TestNewPingerValid(t *testing.T) {
 }
 
 func TestNewPingerInvalid(t *testing.T) {
+	ctx := context.Background()
 	tests := []string{
 		"127.0.0.0.1",
 		"127..0.0.1",
@@ -82,7 +83,7 @@ func TestNewPingerInvalid(t *testing.T) {
 	}
 
 	for _, falseAdress := range tests {
-		_, err := NewPinger(falseAdress)
+		_, err := NewPinger(ctx, falseAdress)
 		AssertError(t, err, falseAdress)
 	}
 }
@@ -93,8 +94,9 @@ func TestSetIPAddr(t *testing.T) {
 		t.Fatal("Can't resolve www.google.com, can't run tests")
 	}
 
+	ctx := context.Background()
 	// Create a localhost ipv4 pinger
-	p, err := NewPinger("localhost")
+	p, err := NewPinger(ctx, "localhost")
 	AssertNoError(t, err)
 	AssertEqualStrings(t, "localhost", p.Addr())
 
@@ -104,8 +106,9 @@ func TestSetIPAddr(t *testing.T) {
 }
 
 func TestStatisticsSunny(t *testing.T) {
+	ctx := context.Background()
 	// Create a localhost ipv4 pinger
-	p, err := NewPinger("localhost")
+	p, err := NewPinger(ctx, "localhost")
 	AssertNoError(t, err)
 	AssertEqualStrings(t, "localhost", p.Addr())
 
@@ -149,8 +152,9 @@ func TestStatisticsSunny(t *testing.T) {
 }
 
 func TestStatisticsLossy(t *testing.T) {
+	ctx := context.Background()
 	// Create a localhost ipv4 pinger
-	p, err := NewPinger("localhost")
+	p, err := NewPinger(ctx, "localhost")
 	AssertNoError(t, err)
 	AssertEqualStrings(t, "localhost", p.Addr())
 
