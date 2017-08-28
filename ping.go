@@ -44,12 +44,11 @@
 package ping
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"math/rand"
 	"net"
-	"os"
-	"os/signal"
 	"sync"
 	"syscall"
 	"time"
@@ -71,7 +70,7 @@ var (
 )
 
 // NewPinger returns a new Pinger struct pointer
-func NewPinger(addr string) (*Pinger, error) {
+func NewPinger(ctx context.Context, addr string) (*Pinger, error) {
 	ipaddr, err := net.ResolveIPAddr("ip", addr)
 	if err != nil {
 		return nil, err
@@ -95,6 +94,8 @@ func NewPinger(addr string) (*Pinger, error) {
 		network: "udp",
 		ipv4:    ipv4,
 		size:    timeSliceLength,
+
+		ctx: ctx,
 
 		done: make(chan bool),
 	}, nil
@@ -134,6 +135,8 @@ type Pinger struct {
 
 	// stop chan bool
 	done chan bool
+
+	ctx context.Context
 
 	ipaddr *net.IPAddr
 	rAddr  string
@@ -296,14 +299,9 @@ func (p *Pinger) run() {
 
 	timeout := time.NewTicker(p.Timeout)
 	interval := time.NewTicker(p.Interval)
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
 
 	for {
 		select {
-		case <-c:
-			close(p.done)
 		case <-p.done:
 			wg.Wait()
 			return
@@ -316,6 +314,9 @@ func (p *Pinger) run() {
 			if err != nil {
 				fmt.Println("FATAL: ", err.Error())
 			}
+		case <-p.ctx.Done():
+			wg.Wait()
+			return
 		case r := <-recv:
 			err := p.processPacket(r)
 			if err != nil {
@@ -395,10 +396,9 @@ func (p *Pinger) recvICMP(conn *icmp.PacketConn, recv chan<- *packet, wg *sync.W
 					if neterr.Timeout() {
 						// Read timeout
 						continue
-					} else {
-						close(p.done)
-						return
 					}
+					close(p.done)
+					return
 				}
 			}
 
