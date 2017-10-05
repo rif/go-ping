@@ -71,7 +71,15 @@ var (
 
 // NewPinger returns a new Pinger struct pointer
 func NewPinger(ctx context.Context, addr string) (*Pinger, error) {
-	ipaddr, err := net.ResolveIPAddr("ip", addr)
+	return newPinger(ctx, addr, "ip")
+}
+
+func NewPingerWithNetwork(ctx context.Context, addr string, network string) (*Pinger, error) {
+	return newPinger(ctx, addr, network)
+}
+
+func newPinger(ctx context.Context, addr string, network string) (*Pinger, error) {
+	ipaddr, err := net.ResolveIPAddr(network, addr)
 	if err != nil {
 		return nil, err
 	}
