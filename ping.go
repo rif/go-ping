@@ -414,7 +414,11 @@ func (p *Pinger) recvICMP(conn *icmp.PacketConn, recv chan<- *packet, wg *sync.W
 				}
 			}
 
-			recv <- &packet{bytes: bytes, nbytes: n, rAddr: rAddr.String()}
+			select {
+			case recv <- &packet{bytes: bytes, nbytes: n, rAddr: rAddr.String()}:
+			case <-p.done:
+				return
+			}
 		}
 	}
 }
