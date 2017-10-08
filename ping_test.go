@@ -29,6 +29,7 @@ var localhost = TestHost{
 var _ = Describe("NewPinger", func() {
 	It("returns pointer to a new Pinger", func() {
 		pinger, _ := NewPinger(context.TODO(), localhost.DnsName)
+		Expect(pinger).ToNot(BeNil())
 		Expect(pinger).To(BeAssignableToTypeOf(&Pinger{}))
 	})
 
@@ -73,6 +74,7 @@ var _ = Describe("NewPingerWithNetwork", func() {
 
 	It("returns pointer to a new Pinger", func() {
 		pinger, _ := NewPingerWithNetwork(context.TODO(), localhost.DnsName, "ip")
+		Expect(pinger).ToNot(BeNil())
 		Expect(pinger).To(BeAssignableToTypeOf(&Pinger{}))
 	})
 
