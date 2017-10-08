@@ -305,8 +305,10 @@ func (p *Pinger) run() {
 		fmt.Println(err.Error())
 	}
 
-	timeout := time.NewTicker(p.Timeout)
+	timeout := time.NewTimer(p.Timeout)
+	defer timeout.Stop()
 	interval := time.NewTicker(p.Interval)
+	defer interval.Stop()
 
 	for {
 		select {
