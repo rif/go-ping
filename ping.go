@@ -451,10 +451,11 @@ func (p *Pinger) processPacket(recv *packet) error {
 	}
 
 	// Check if reply from same ID
-	body := m.Body.(*icmp.Echo)
+	//FIXME: id does not match!
+	/*body := m.Body.(*icmp.Echo)
 	if body.ID != p.id {
 		return nil
-	}
+	}*/
 
 	outPkt := &Packet{
 		Nbytes: recv.nbytes,
